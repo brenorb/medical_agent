@@ -13,7 +13,7 @@ class QASignature(dspy.Signature):
     Answer medical questions based on the context.
     """
     medical_question: str = dspy.InputField(description="The medical question to answer")
-    history: dspy.History = dspy.InputField(description="The history of the conversation")
+    history: Optional[dspy.History] = dspy.InputField(description="The history of the conversation")
     context: Optional[str] = dspy.InputField(description="The context to use to answer the question")
     # Output fields
     answer: str = dspy.OutputField(description="The answer to the question")
@@ -22,11 +22,13 @@ class Agent(dspy.Module):
     def __init__(self):
         self.qa = dspy.ChainOfThought(QASignature)
 
-    def forward(self, question: str, history: dspy.History) -> str:
+    def forward(self, medical_question: str, history: Optional[dspy.History] = None) -> str:
         # search for context
         context = None # TODO: search for context
+        if history is None:
+            history = dspy.History(messages=[])
         
-        result = self.qa(medical_question=question, history=history, context=context)
+        result = self.qa(medical_question=medical_question, history=history, context=context)
         return result.answer
 
 
