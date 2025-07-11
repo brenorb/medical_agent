@@ -2,14 +2,7 @@ import dspy
 from dspy.evaluate import Evaluate
 
 from agent import Agent
-from preprocess import data
-
-train, test = [], []
-for q, a in zip(data['train_questions'], data['train_answers']):
-    train.append(dspy.Example(medical_question=q, answer=a).with_inputs("medical_question"))
-
-for q, a in zip(data['test_questions'], data['test_answers']):
-    test.append(dspy.Example(medical_question=q, answer=a).with_inputs("medical_question"))
+from preprocess import test, train
 
 
 # Define the signature for automatic assessments.
@@ -30,16 +23,17 @@ def metric(gold, pred, trace=None):
 
     return correct.assessment_answer
 
-
+    
 agent = Agent()
 
-evaluate = Evaluate(metric=metric, devset=train, num_threads=1, display_progress=True, display_table=5)
-evaluate(agent)
+def evaluate_agent(agent):
+    evaluate = Evaluate(metric=metric, devset=test, num_threads=1, display_progress=True, display_table=5)
+    evaluate(agent)
 
 
-# optimizer = dspy.MIPROv2(metric=metric)
-# optimized_agent = optimizer.compile(agent, trainset=train)
-# optimized_agent.save(path="/tmp/model.json")
+optimizer = dspy.MIPROv2(metric=metric)
+optimized_agent = optimizer.compile(agent, trainset=train)
+optimized_agent.save(path="/tmp/model.json")
 
 
 

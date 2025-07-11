@@ -2,6 +2,7 @@ import csv
 import os
 import pickle
 
+import dspy
 from sklearn.model_selection import train_test_split
 
 PICKLE_PATHS = ["data/rag_questions.pkl", "data/rag_answers.pkl", "data/train_questions.pkl", "data/train_answers.pkl", "data/test_questions.pkl", "data/test_answers.pkl"]
@@ -49,5 +50,14 @@ except FileNotFoundError:
     save_pickle_data(dataset, PICKLE_PATHS)
     data = {name.split(".")[0].split("/")[-1]: dataset[i] for i, name in enumerate(PICKLE_PATHS)}
 
+train, test = [], []
+for q, a in zip(data['train_questions'], data['train_answers']):
+    train.append(dspy.Example(medical_question=q, answer=a).with_inputs("medical_question"))
+
+for q, a in zip(data['test_questions'], data['test_answers']):
+    test.append(dspy.Example(medical_question=q, answer=a).with_inputs("medical_question"))
+
+
 if __name__ == "__main__":
-    print(data['train_questions'])
+    # print(data['train_questions'])
+    print(train[0])
