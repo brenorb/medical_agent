@@ -40,6 +40,10 @@ Type 'q' to quit.
 
 ### Training and Evaluation
 
+Run `uv run python eval.py` explicitly to start optimization. Importing
+`eval.py` defines the evaluation helpers without loading the dataset,
+initializing the agent or starting optimization.
+
 The model as is performs with ~92% accuracy on the test set. The evaluation metric is a simple LLM-as-judge asking if the question is answered correctly.
 I didn't have time to optimize the model (although the code is there) and think more about the evaluation system.
 
